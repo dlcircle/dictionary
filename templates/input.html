@@ -1,0 +1,175 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<title>Dictionary{{' | %s' % name if name}}</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
+		<meta name="description" content="汉字检索" />
+		<meta property="og:site_name" content="汉字检索" />
+		<meta property="og:title" content="汉字检索" />
+		<meta property="og:type" content="website" />
+		<meta property="og:description" content="汉字检索" />
+		<!-- <link href="https://fonts.googleapis.com/css?family=Oswald:200,200italic,700,700italic" rel="stylesheet" type="text/css" /> -->
+		<link rel="stylesheet" href="/dictionary/static/css/main.css" />
+		<noscript><link rel="stylesheet" href="/dictionary/static/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-playing">
+		<div id="wrapper">
+			<div id="main">
+				<div class="inner">
+					<section id="home-section">
+						<div id="columns01" class="container default">
+							<div class="inner">
+								<p id="text02">Dictionary!</p>
+								<h1 id="text03">汉字检索</h1>
+								<p id="text01">最全面多汉字检索字典</p>
+							</div>
+							<ul id="nav" class="navbtns">
+								<li>
+									<a href="/dictionary/setword/" class="navbtn n01 {{ 'navactive' if page == 'home'}}">Home</a>
+                                </li>
+                                <!-- <li>
+									<a href="/dictionary/" class="navbtn n04 {{ 'navactive' if page == 'users'}}">Users</a>
+                                </li>
+                                <li>
+									<a href="/dictionary/" class="navbtn n02 {{ 'navactive' if page == 'letters'}}">Letters</a>
+                                </li>
+                                <li>
+									<a href="/dictionary/" class="navbtn n05 {{ 'navactive' if page == 'scan'}}">Scan</a>
+                                </li>
+                                <li>
+									<a href="/dictionary/" class="navbtn n03 {{ 'navactive' if page == 'pick'}}">Pick</a>
+								</li> -->
+							</ul>
+						</div>
+						<div id="columns02" class="container default">
+							<div class="inner sbcontent">
+								{% if page != 'home' %}
+									<h2 class="sbtitle">{{name | safe}}</h2>
+									<hr class="sbhr">
+								{% endif %}
+								<!-- 錄入文字界面 -->
+								{% if page == 'setword' %}
+                                    {% for word in wordlist %}
+                                    <p style="width: 190px;float: left;margin-top: 0;">{{word[1]}}&nbsp;&nbsp;{{word[0]}}</p>
+                                    {% endfor %}
+									<form id="form01" method="post" action="#">
+										<div class="inner">
+											<div class="field">
+												<input type="text" name="word" id="form01-word" placeholder="請輸入漢字" maxlength="8" value="{{word}}">
+											</div>
+											<div class="field">
+												<input type="text" name="page" id="form01-page" placeholder="請輸入{{'「%s(%s)」' % (word, wordlist[0][0]) if word != '' else ''}}頁碼" maxlength="80" value="">
+											</div>
+											<div class="actions">
+												<button type="submit">提交</button>
+											</div>
+										</div>
+                                    </form>
+                                    {% if word == '' %}
+                                    <script type="text/javascript">
+                                        document.getElementById('form01-word').focus(); 
+                                    </script>
+                                    {% else %}
+                                    <script type="text/javascript">
+                                        document.getElementById('form01-page').focus(); 
+                                    </script>
+                                    {% endif %}
+								{% endif %}
+								<!-- 登陆界面 -->
+								{% if page == 'setkeys' %}
+									<form id="form01" method="post" action="#">
+										<div class="inner">
+											<div class="field">
+												<input type="text" name="page" id="form01-page" placeholder="Page" maxlength="8" value="{{thispage}}">
+											</div>
+											<div class="field">
+												<input type="text" name="key" id="form01-key" placeholder="Key" maxlength="80" value="{{thiskey}}">
+											</div>
+											<div class="field">
+												<input type="text" name="keys" id="form01-keys" placeholder="Keys" maxlength="12" value="{{thiskeys}}">
+											</div>
+											<div class="field">
+												<input type="text" name="keys2" id="form01-keys2" placeholder="Keys2" maxlength="12">
+											</div>
+											<div class="actions">
+												<button type="submit">提交</button>
+											</div>
+										</div>
+									</form>
+								{% endif %}
+								<!-- 公共模板文本显示 -->
+									<p>{{ text | safe if text}}</p>
+								<!-- 信件页面显示信件回复 -->
+								{% if page == 'letter' and replys%}
+								{% for reply in replys %}
+									<br />
+									<h2 class="sbtitle">{{reply.title}}</h2>
+									<hr class="sbhr">
+									<p>{{reply.letter.replace(' ','&nbsp;').replace('\n','<br />') | safe}}</p>
+									<p class="ql-align-right">{{reply.writer}}&nbsp;&nbsp;&nbsp;{{reply.str_time}}</p>
+								{% endfor %}
+								{% endif %}
+								<!-- 信件列表页面 -->
+								{% for item in letters if letters %}
+									<a href="/dictionary/admin/letter/{{item.id}}">
+										<p>
+											Id: {{ item.id }}&nbsp;&nbsp;{{ item.cate }}
+											<br />
+											From: {{ item.fromid }}
+											<br />
+											To: {{ item.toid }}
+											<br />
+											[{{ item.title.encode().decode('utf-8') }}]&nbsp;&nbsp;
+											By: {{ item.writer.encode().decode('utf-8') }}
+										</p>
+										<p class="ql-align-right">
+											Time: {{ item.str_time }}
+											<br />
+											<br />
+										</p>
+									</a>
+								{% endfor %}
+								<!-- 用户列表页面 -->
+								{% for item in users if users %}
+									<p>
+										Id: {{ item.id }}
+										<br />
+										Name: {{ item.name.encode().decode('utf-8') if item.name else '(None)' }}&nbsp;&nbsp;
+										Grade: {{ item.grade }}
+										<br />
+										Guid: {{ item.guid }}
+									</p>
+									<p class="ql-align-right">
+										Time: {{ item.str_time }}
+										<br />
+										<br />
+									</p>
+								{% endfor %}
+								<!-- 公共翻页页码信息 -->
+								{% if pageitem %}
+									<p class="ql-align-center">
+										<a class="{{'white' if pageitem[0] <= 1}}" href="/dictionary/admin/{{page}}/{{pageitem[0] - 1 if pageitem[0] > 1 else 1}}">PREV </a>
+										{{pageitem[0]}} / {{pageitem[1]}}
+										<a class="{{'white' if pageitem[0] >= pageitem[1]}}" href="/dictionary/admin/{{page}}/{{pageitem[0] + 1 if pageitem[0] < pageitem[1] else pageitem[1]}}"> NEXT</a>
+									</p>
+								{% endif %}
+							</div>
+						</div>
+						<!-- <div id="image01" class="image full">
+							<span class="deferred">test</span>
+                        </div> -->
+                        <!-- 退出登陸的div -->
+						<!-- <div id="columns02" class="container default">
+							<div class="inner">
+								<p id="text07">By Yuan / <a href="/dictionary/admin/logout">Logout</a></p>
+								<hr class="sbhr">
+							</div>
+						</div> -->
+						<p id="text05">© dictionary</p>
+					</section>
+				</div>
+			</div>
+        </div>
+	</body>
+</html>
